@@ -73,7 +73,7 @@ public class SignUpControl {
                 new FileChooser.ExtensionFilter("JPG Image", "*.jpg"),
                 new FileChooser.ExtensionFilter("PNG Image", "*.png"),
                 new FileChooser.ExtensionFilter("BMP Image", "*.bmp"),
-                new FileChooser.ExtensionFilter("TIFF Image", "*.tiff"),
+                new FileChooser.ExtensionFilter("TIFF Image", "*.tiff")
         );
 
         /* Get the sign up window to pass to the .showOpenDialog()
