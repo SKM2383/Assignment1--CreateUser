@@ -32,6 +32,8 @@ import model.User;
 import model.UserIO;
 import model.UserStorage;
 
+import util.list.ArrayOrderedList;
+import util.list.DuplicateElementException;
 import view.LoginView;
 
 public class SignUpControl {
@@ -75,10 +77,10 @@ public class SignUpControl {
                 new FileChooser.ExtensionFilter("SVG Image", "*.svg")
         );
 
-        // Get the sign up window to pass to the .showOpenDialog()
-        // method so the window blocks until the file chooser is closed
-        // or a file is selected. This window is obtained by finding the
-        // window that one of the sign up controls is on
+        /* Get the sign up window to pass to the .showOpenDialog()
+         * method so the window blocks until the file chooser is closed
+         * or a file is selected. This window is obtained by finding the
+         * window that one of the sign up controls is on */
         Stage parentWindow = (Stage) txtfldPhoto.getScene().getWindow();
         File chosenFile = photoPathChooser.showOpenDialog(parentWindow);
 
@@ -89,8 +91,8 @@ public class SignUpControl {
         }
     }
 
-    // Private helper method to check if a TextField or a subclass [PasswordField]
-    // is null or empty.
+    /* Private helper method to check if a TextField or a subclass [PasswordField]
+     * is null or empty. */
     private boolean fieldIsEmpty(TextField textField){
         if(textField.getText() == null || textField.getText().trim().isEmpty()){
             return true;
@@ -100,19 +102,22 @@ public class SignUpControl {
         }
     }
 
-    // Private helper method to add the newly created User to the database
-    // and saving the database. This was made to reduce repeated code in the
-    // conditional statements when verifying the email field
+    /* Private helper method to add the newly created User to the database
+     * and saving the database. This was made to reduce repeated code in the
+     * conditional statements when verifying the email field */
     private void finishCreatingUser(User newUser){
-        // After checking all the fields, we can now add the user to the database
-        UserStorage.getUserDatabase().add(newUser);
-
         // Then write the database back to the file
         try{
+            // After checking all the fields, we can now add the user to the database
+            UserStorage.getUserDatabase().add(newUser);
             UserIO.writeUsers(UserStorage.getUserDatabase());
+        }
+        catch(DuplicateElementException de){
+            lblSignUpStatus.setText("User is already in the database");
         }
         catch(IOException e){
             lblSignUpStatus.setText("Database Error: Could not add user.");
+            lblSignUpStatus.setVisible(true);
         }
 
         lblSignUpStatus.setText("Account Created Successfully");
@@ -127,7 +132,7 @@ public class SignUpControl {
 
         // Check that the required fields aren't empty
         // This is done by trimming the contents and calling isEmpty(), however an
-        // exception will occur if the value was null, so that must also be checked
+        // exception will occur if the value was null, so that must also be checked */
         if(fieldIsEmpty(txtfldFirstName) || fieldIsEmpty(txtfldLastName) ||
            fieldIsEmpty(txtfldUsername)  || fieldIsEmpty(psfPassword) ||
            fieldIsEmpty(psfConfirmedPassword) ||
@@ -140,13 +145,22 @@ public class SignUpControl {
         {
             String inputUsername = txtfldUsername.getText();
 
+            ArrayOrderedList<User> database = UserStorage.getUserDatabase();
+
             // Check if the username is in the database by iterating through it and setting
             // notDuplicateUsername to false if it is a duplicate
             boolean notDuplicateUsername = true;
 
-            Iterator<User> databaseIterator = UserStorage.getUserDatabase().iterator();
-            while(databaseIterator.hasNext()){
-                User nextUser = databaseIterator.next();
+            database.reset();
+            User nextUser;
+
+            while(database.hasNext()){
+                nextUser = database.getNext();
+
+                if(nextUser == null){
+                    break;
+                }
+
                 if(inputUsername.equals(nextUser.getUsername())){
                     notDuplicateUsername = false;
                     break;
