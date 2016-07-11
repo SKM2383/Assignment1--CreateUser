@@ -16,9 +16,6 @@
 package controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.TreeSet;
 
 import javafx.event.Event;
 import javafx.scene.control.TextField;
@@ -29,6 +26,9 @@ import javafx.fxml.FXML;
 
 import model.UserStorage;
 import model.User;
+
+import util.list.ArrayOrderedList;
+
 import view.SignUpView;
 
 public class LoginControl {
@@ -52,7 +52,7 @@ public class LoginControl {
 
     @FXML
     public void authenticate(Event e){
-        TreeSet<User> userDatabase = UserStorage.getUserDatabase();
+        ArrayOrderedList<User> userDatabase = UserStorage.getUserDatabase();
 
         // Make sure that the username and password fields are not empty
         if(!fieldIsEmpty(txtfldUsername) && !fieldIsEmpty(psfPassword)){
@@ -61,26 +61,36 @@ public class LoginControl {
             String signInUsername = txtfldUsername.getText();
             String signInPassword = psfPassword.getText();
 
-            // Now iterate through the database and check each database user's username and password
-            Iterator<User> databaseIterator = userDatabase.iterator();
-            while(databaseIterator.hasNext()){
-                User nextUser = databaseIterator.next();
+            lblSignInStatus.setVisible(false);
 
-                // If the provided username and password matches, show the successful login message
-                if(nextUser.getUsername().equals(signInUsername) && nextUser.getPassword().equals(signInPassword)){
+            // Now extract each database user and compare their username and password
+            userDatabase.reset();
+            User nextUser;
+
+            while(userDatabase.hasNext()){
+                nextUser = userDatabase.getNext();
+                System.out.println(nextUser);
+
+                /* If the nextUser is equal to null, that means the database hasn't been created yet, so
+                   show the login error prompt */
+                if(nextUser == null){
+                    lblSignInStatus.setText("No users in the database");
+                    lblSignInStatus.setVisible(true);
+                    break;
+                }
+                else if(nextUser.getUsername().equals(signInUsername) && nextUser.getPassword().equals(signInPassword))
+                {
                     lblSignInStatus.setText("Sign In Successful");
                     lblSignInStatus.setVisible(true);
+                    break;
                 }
-                // Else if the database contains more Users, then just continue without showing a login error
-                // since there are more Users to be checked
-                else if(databaseIterator.hasNext()){
-                    continue;
-                }
-                // At this point all database users have been checked, which means the credentials didn't match
-                // any database user, so show the login error
                 else{
-                    lblSignInStatus.setText("Incorrect Username or Password");
-                    lblSignInStatus.setVisible(true);
+                    // If there aren't any more Users to check, that means the record wasn't found, so
+                    // show login error
+                    if(!userDatabase.hasNext()){
+                        lblSignInStatus.setText("Incorrect Username or Password");
+                        lblSignInStatus.setVisible(true);
+                    }
                 }
             }
         }

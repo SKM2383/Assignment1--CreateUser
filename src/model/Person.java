@@ -65,9 +65,9 @@ public class Person implements Serializable{
 
     @Override
     public String toString(){
-        return (" Name: " + this.firstName + " " + this.lastName + "\n" +
-                " SSN: " + this.ssn + "\n" +
-                " Sex: " + this.gender + "\n" +
-                " Birthday: " + this.DATE_OF_BIRTH + "\n");
+        return ("[Name: " + this.firstName + " " + this.lastName + "] " +
+                "[SSN: " + this.ssn + "] " +
+                "[Gender: " + this.gender + "] " +
+                "[Birthday: " + this.DATE_OF_BIRTH + "] ");
     }
 }

@@ -24,6 +24,7 @@ package model;
 
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 public class User extends Person implements Serializable, Comparable<User>{
     private String username;
@@ -31,6 +32,10 @@ public class User extends Person implements Serializable, Comparable<User>{
     private String email;
     private String phone;
     private String photo;
+
+    // This Comparator will act as a chain comparator to compare the Users in compareTo
+    private Comparator<User> userSorter;
+
 
     // Although multiple constructors can be created to handle when different combinations
     // of fields are filled out, all that's needed is this one constructor that only takes
@@ -43,6 +48,11 @@ public class User extends Person implements Serializable, Comparable<User>{
 
         this.username = uName;
         this.password = pass;
+
+        // Chain the Comparators using lambdas and .thenComparing method
+        userSorter = (u1, u2) -> u1.getGender().compareTo(u2.getGender()); // By Gender
+        userSorter = userSorter.thenComparing((u1,u2) -> u1.getBirthday().compareTo(u2.getBirthday())); // By DOB
+        userSorter = userSorter.thenComparing((u1,u2) -> u1.getUsername().compareTo(u2.getUsername())); // By Username
     }
 
     public String getUsername(){
@@ -65,21 +75,21 @@ public class User extends Person implements Serializable, Comparable<User>{
     @Override
     public String toString(){
         return (super.toString() +
-                " Username: " + this.username + "\n" +
-                " Email: " + this.email + "\n" +
-                " Photo Path: " + this.photo + "\n\n");
+                "[Username: " + this.username + "] " +
+                "[Email: " + this.email + "] " +
+                "[Photo Path: " + this.photo + "]");
     }
 
-    // This method is used by the TreeSet UserStorage.userDatabase to test
-    // if a certain element or field is already present in the set.
-    // Here I'm overriding it so that UserStorage.userDatabase checks if a
-    // provided Object (which will be an input String) has a username that
-    // is equal to this User
+    // Used by certain data structures such as sets and ordered lists to
+    // order the Users by their username
     @Override
     public int compareTo(User otherUser) {
-        // Uses the String class .compareTo method to check
-        // if this User username matches a given String. Another
-        // User object's username will be the input String
-        return username.compareTo(otherUser.getUsername());
+        // Use this class userSorter to compare with another user
+        // using chain comparators
+        return userSorter.compare(this, otherUser);
+    }
+
+    public boolean equals(User otherUser){
+        return this.username.equals(otherUser.getUsername());
     }
 }

@@ -14,17 +14,20 @@
 
 package model;
 
+
+
+import util.list.ArrayOrderedList;
+
 import java.util.Comparator;
-import java.util.TreeSet;
 
 public class UserStorage {
-    private static TreeSet<User> userDatabase = new TreeSet<>();
+    private static ArrayOrderedList<User> userDatabase = new ArrayOrderedList<>(10);
 
-    public static TreeSet<User> getUserDatabase() {
+    public static ArrayOrderedList<User> getUserDatabase() {
         return userDatabase;
     }
 
-    public static void setUserDatabase(TreeSet<User> newUserDatabase) {
+    public static void setUserDatabase(ArrayOrderedList<User> newUserDatabase) {
         userDatabase = newUserDatabase;
     }
 }
