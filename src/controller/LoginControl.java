@@ -69,7 +69,6 @@ public class LoginControl {
 
             while(userDatabase.hasNext()){
                 nextUser = userDatabase.getNext();
-                System.out.println(nextUser);
 
                 /* If the nextUser is equal to null, that means the database hasn't been created yet, so
                    show the login error prompt */
