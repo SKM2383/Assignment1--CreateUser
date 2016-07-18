@@ -33,10 +33,6 @@ public class User extends Person implements Serializable, Comparable<User>{
     private String phone;
     private String photo;
 
-    // This Comparator will act as a chain comparator to compare the Users in compareTo
-    private Comparator<User> userSorter;
-
-
     // Although multiple constructors can be created to handle when different combinations
     // of fields are filled out, all that's needed is this one constructor that only takes
     // the required fields. If optional fields were filled out, use the setter methods to
@@ -48,11 +44,6 @@ public class User extends Person implements Serializable, Comparable<User>{
 
         this.username = uName;
         this.password = pass;
-
-        // Chain the Comparators using lambdas and .thenComparing method
-        userSorter = (u1, u2) -> u1.getGender().compareTo(u2.getGender()); // By Gender
-        userSorter = userSorter.thenComparing((u1,u2) -> u1.getBirthday().compareTo(u2.getBirthday())); // By DOB
-        userSorter = userSorter.thenComparing((u1,u2) -> u1.getUsername().compareTo(u2.getUsername())); // By Username
     }
 
     public String getUsername(){
@@ -90,6 +81,6 @@ public class User extends Person implements Serializable, Comparable<User>{
     }
 
     public boolean equals(User otherUser){
-        return this.username.equals(otherUser.getUsername());
+        return username.compareTo(otherUser.getUsername());
     }
 }
