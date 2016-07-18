@@ -261,7 +261,7 @@ public class SignUpControl {
                 }
                 else {
                     // psfPassword and psfConfirmedPassword don't match, so set the status label
-                    lblSignUpStatus.setText("The entered passwords don't match. Try typing them again");
+                    lblSignUpStatus.setText("The entered passwords don't match");
                     lblSignUpStatus.setVisible(true);
                 }
             }
